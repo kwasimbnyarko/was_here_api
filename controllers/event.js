@@ -1,6 +1,7 @@
 const Event = require('../models/event');
 const qrcode = require('qrcode');
 const path = require('path');
+const uuid = require('uuid');
 
 
 
