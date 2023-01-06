@@ -62,3 +62,32 @@ Response : 201 Created Successfully
     }
 }
 ````
+
+### Mark Event Attendance
+End Point: /api/v1/events/attendance<br/>
+Method: PUT <br/>
+Request Body:
+````json
+{
+  "code":"4758a261-9708-4cde-9560-f54d2f067f41",
+  "details":{
+    "userId":"63b42a1be04cc61c366a0cfa"
+  }
+}
+````
+
+Response : 200 Ok
+````json
+{
+    "success": true,
+    "attendance": {
+        "_id": "63b78efd5aa4a4381edcc0d8",
+        "eventId": "123456",
+        "attendees": [
+            "63b6b11c17984d440d02a852",
+            "63b42a1be04cc61c366a0cfa"
+        ],
+        "__v": 1
+    }
+}
+````
