@@ -29,9 +29,4 @@ const EventSchema = new mongoose.Schema({
 },{timestamps:true});
 
 
-const EventQRSchema = new mongoose.Schema({
-
-})
-
-
 module.exports = mongoose.model('Event',EventSchema);
