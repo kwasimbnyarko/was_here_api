@@ -1,6 +1,7 @@
 const qrcode = require('qrcode');
 const path = require('path');
 const { v4:uuidv4 } = require('uuid');
+const date = require('date-and-time');
 
 
 const Event  = require('../models/event');
@@ -22,8 +23,30 @@ const getAllEvents = async (req,res) =>{
 
 
 const createEvent = async(req,res) =>{
+    const now = new Date();
+    const newBody = req.body;
+
 
     try{
+        if(newBody.date === undefined){
+            newBody.date = date.format(now, 'YYYY/MM/DD');
+        }
+        console.log(`startTime = ${req.body.startTime}`);
+        if(req.body.startTime!==undefined){
+
+            if (req.body.startTime.length === 4) {
+                newBody.startTime = newBody.date + ` ${newBody.startTime.slice(0, 2)}:${newBody.startTime.slice(2, 4)}:00`;
+
+                if (req.body.eventDurationInHours !== undefined){
+
+                    const startTime = date.parse(newBody.startTime, 'YYYY/MM/DD HH:mm:ss');
+                    newBody.endTime = date.addHours(startTime,Number(req.body.eventDurationInHours)).toISOString();
+
+                }
+            }
+
+        }
+
         const event = await Event.create(req.body);
         return res.status(201).json({success:true,data:event});
     }catch(e){
@@ -61,6 +84,8 @@ const generateEventQR = async (req,res) =>{
 }
 
 const markEventAttendance = async (req,res) =>{
+    const now = new Date();
+
     const code = req.body.code;
     const userId = req.body.details.userId;
     try{
@@ -74,21 +99,27 @@ const markEventAttendance = async (req,res) =>{
             return res.status(500).json({success:false,error:`This user is not registered. Confirm user details`});
         }
         const eventQR = await EventQR.findOne({codeDetails:code})
-        //todo check if event is active
-        const attendanceRecordExist = await Attendance.exists({eventId:eventQR.eventId});
-        if(attendanceRecordExist){
-            const attendance =  await Attendance.findOne({eventId:eventQR.eventId});
-            attendance.attendees.push(userId);
-            attendance.save();
+        const eventId = eventQR.eventId;
+        console.log(`cached events 1 = ${cachedEvents}`);
+        console.log(`value ; ${cachedEvents.get(eventId)}`)
 
-            return res.status(200).json({success:true,attendance:attendance});
+        const event = await Event.findById({_id: eventId});
+        if(now > Date.parse(event.endTime) ){
+            return  res.status(500).json({success:false,error:"can't accept new entries, event is over"});
         }else{
-            const attendance =  await Attendance.create({eventId:eventQR.eventId});
-            attendance.attendees.push(userId);
-            return res.status(200).json({success:true,attendance:attendance});
+            const attendanceRecordExist = await Attendance.exists({eventId:eventQR.eventId});
+            if(attendanceRecordExist){
+                const attendance =  await Attendance.findOne({eventId:eventQR.eventId});
+                attendance.attendees.push(userId);
+                attendance.save();
+
+                return res.status(200).json({success:true,attendance:attendance});
+            }else{
+                const attendance =  await Attendance.create({eventId:eventQR.eventId});
+                attendance.attendees.push(userId);
+                return res.status(200).json({success:true,attendance:attendance});
+            }
         }
-
-
 
 
     }catch (e) {
