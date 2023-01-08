@@ -100,8 +100,6 @@ const markEventAttendance = async (req,res) =>{
         }
         const eventQR = await EventQR.findOne({codeDetails:code})
         const eventId = eventQR.eventId;
-        console.log(`cached events 1 = ${cachedEvents}`);
-        console.log(`value ; ${cachedEvents.get(eventId)}`)
 
         const event = await Event.findById({_id: eventId});
         if(now > Date.parse(event.endTime) ){
