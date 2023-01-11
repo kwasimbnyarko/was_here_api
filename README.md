@@ -13,7 +13,8 @@ Resuest Body:
 {
   "name": "Kumi",
   "index_number":"1234567",
-  "reference_number": "12345678"
+  "reference_number": "12345678",
+  "mac_address": "****************"
 }
 ````
 Response : 201 Created Successfully
@@ -28,11 +29,25 @@ Response : 201 Created Successfully
 }
 ````
 
+### Get User With Mac Address
+End Point: /api/v1/users/:address<br/>
+Method: GET<br/>
+Response Body: 200 Ok
+````json
+{
+  "success": true,
+  "user": "Some User Details"
+}
+````
+
+
+
+
 
 ### Create Event
 End Point: /api/v1/events<br/>
 Method: POST <br/>
-Resuest Body:
+Request Body:
 ````json
 {
   "name": "Event 1",

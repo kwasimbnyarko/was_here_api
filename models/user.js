@@ -18,6 +18,11 @@ const UserSchema = new mongoose.Schema({
         required:[true,'must provide reference number'],
         trim:true,
         maxlength:8
+    },
+    mac_address:{
+        type:String,
+        required:[true,'must provide device mac address'],
+        trim:true
     }
 });
 
