@@ -87,7 +87,7 @@ const markEventAttendance = async (req,res) =>{
     const now = new Date();
 
     const code = req.body.code;
-    const userId = req.body.details.userId;
+    const userId = req.body.userId;
     try{
         const doesEventQRExist = await EventQR.exists({codeDetails:code});
         const doesUserExist = await User.exists({_id:userId});
